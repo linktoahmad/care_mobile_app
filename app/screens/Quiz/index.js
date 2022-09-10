@@ -77,43 +77,11 @@ export default function Booking({navigation}) {
                 _id: res.data._id,
                 score: sum / 10,
               })
-              .then(res => {
-                console.log(res.data.message);
-                // moods enum=[depressed,stressed,upset,tense,fatigued,calm,relaxed,happy,excited,joy]
-                switch (true) {
-                  case sum / 10 <= 10:
-                    SaveMood('depressed');
-                    break;
-                  case sum / 10 > 10 && sum / 10 <= 20:
-                    SaveMood('stressed');
-                    break;
-                  case sum / 10 > 20 && sum / 10 <= 30:
-                    SaveMood('upset');
-                    break;
-                  case sum / 10 > 30 && sum / 10 <= 40:
-                    SaveMood('tense');
-                    break;
-                  case sum / 10 > 40 && sum / 10 <= 50:
-                    SaveMood('fatigued');
-                    break;
-                  case sum / 10 > 50 && sum / 10 <= 60:
-                    SaveMood('calm');
-                    break;
-                  case sum / 10 > 60 && sum / 10 <= 70:
-                    SaveMood('relaxed');
-                    break;
-                  case sum / 10 > 70 && sum / 10 <= 80:
-                    SaveMood('happy');
-                    break;
-                  case sum / 10 > 80 && sum / 10 <= 90:
-                    SaveMood('excited');
-                    break;
-                  case sum / 10 > 90:
-                    SaveMood('joy');
-                    break;
-                  default:
-                  // code block
+              .then(() => {
+                axios.get(apiList.GetMoodOnScore+`/${Math.round(sum / 10) * 10}`).then(res => {
+                  SaveMood(res.data.mood)
                 }
+                )
               });
           });
       }
@@ -174,8 +142,8 @@ export default function Booking({navigation}) {
   };
 
   useEffect(() => {
-    console.log(totalScore.quizData.date);
-    console.log(totalScore.quizData.mood);
+    // console.log(totalScore.quizData.date);
+    // console.log(totalScore.quizData.mood);
     if (
       totalScore.quizData.date === new Date().toISOString('uk').substring(0, 10)
     ) {
@@ -232,9 +200,65 @@ export default function Booking({navigation}) {
           />
         ) : (
           <>
-            <View>
-              <Text style={{textAlign: 'center'}}>Quiz submitted</Text>
+            <View style={styles.banner}>
+              <Text
+                overline
+                semibold
+                style={{textAlign: 'center', color: 'black', fontSize: 20}}>
+                You did it!
+              </Text>
+              <Text
+                overline
+                style={{textAlign: 'center', color: 'black', fontSize: 15}}>
+                You took the quiz on
+              </Text>
+              <Text
+                overline
+                semibold
+                style={{textAlign: 'center', color: 'black', fontSize: 20}}>
+                {totalScore.quizData.date}
+              </Text>
+              <Text
+                overline
+                style={{textAlign: 'center', color: 'black', fontSize: 15}}>
+                according to your answers
+              </Text>
+              <Text
+                overline
+                style={{textAlign: 'center', color: 'black', fontSize: 15}}>
+                you must be feeling
+              </Text>
+              <Text
+                overline
+                semibold
+                style={{textAlign: 'center', color: 'black', fontSize: 20}}>
+                {totalScore.quizData.mood}
+              </Text>
             </View>
+            <Card
+              style={[styles.promotionItem]}
+              image={`${serverIp}`+activity.image}
+              onPress={() =>
+                navigation.navigate('HotelDetail', {activity: activity})
+              }>
+              <Text subhead whiteColor>
+                Recomenended Activity
+              </Text>
+              <Text title2 whiteColor semibold>
+                {activity.name}
+              </Text>
+              <View style={styles.contentCartPromotion}>
+                <Button
+                  style={styles.btnPromotion}
+                  onPress={() =>
+                    navigation.navigate('HotelDetail', {activity: activity})
+                  }>
+                  <Text body2 semibold whiteColor>
+                    More Details
+                  </Text>
+                </Button>
+              </View>
+            </Card>
           </>
         )}
       </SafeAreaView>

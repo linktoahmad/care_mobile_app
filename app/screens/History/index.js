@@ -70,7 +70,7 @@ export default function Messenger({navigation}) {
           })
           .then(res => getHistory(res.data._id))
           .catch(e => console.log(e));
-        console.log(value);
+       // console.log(value);
       }
     } catch (e) {
       console.log(e);
@@ -101,6 +101,7 @@ export default function Messenger({navigation}) {
       })
       .then(res => {
         const x = {};
+       // console.log(res.data)
         res.data.forEach(item => {
           x[item.dateOfQuiz.substring(0, 10)] = {
             customStyles: {
@@ -130,8 +131,11 @@ export default function Messenger({navigation}) {
     <View style={{flex: 1}}>
       <Header title={t('History')} />
 
-      <View
-        style={[styles.contentCalendar, {backgroundColor: colors.card}]}></View>
+      <View style={[styles.contentCalendar, {backgroundColor: colors.card}]}>
+        <Calendar markingType={'custom'} markedDates={history} />
+      </View>
+     
+     <FormOption style={{marginTop: 20}} />
     </View>
   );
 }

@@ -147,7 +147,7 @@ export default function Home({navigation}) {
                   },
                 ]}>
                 <Text semibold style={styles.titleView}>
-                  Mood Accordint to last Quiz
+                  Mood according to last quiz
                 </Text>
                 <Icon
                   name={renderIconService()}
