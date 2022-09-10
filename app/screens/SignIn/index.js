@@ -65,6 +65,7 @@ export default function SignIn({navigation}) {
         password: false,
       });
     } else if (validate(id)) {
+      setLoading(true)
       axios
         .post(apiList.login, {
           email: id,
@@ -73,7 +74,11 @@ export default function SignIn({navigation}) {
         .then(res => {
           storeData(res.data.token);
           dispatch(AuthActions.authentication(true));
-          navigation.navigate('home')
+          setTimeout(() => {
+            navigation.navigate('Home')
+          }, 1000);
+          
+        
         })
         .catch(e => {
           console.log(e)
