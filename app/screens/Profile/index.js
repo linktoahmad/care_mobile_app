@@ -203,7 +203,7 @@ export default function Profile({navigation}) {
             </Text>
             <Text style={{textAlign: 'center'}}>NAME 1</Text>
             <Text style={{textAlign: 'center'}}>NAME 2</Text>
-            <Text style={{textAlign: 'center'}}>DESCRIPTIPN</Text>
+            <Text style={{textAlign: 'center'}}>DESCRIPTION</Text>
             <Text style={{textAlign: 'center'}}>
               Lorem Ipsum is simply dummy text of the printing and typesetting
               industry. Lorem Ipsum has been the industry's standard dummy text
