@@ -18,9 +18,10 @@ const GoogleButton = () => {
   };
 
   //stores data presistive state
-  const storeData = async (value) => {
+  const storeData = async (value,id) => {
     try {
       await AsyncStorage.setItem('@storage_Key', value)
+      await AsyncStorage.setItem('@storage_Key_id', id)
     } catch (e) {
       // saving error
     }
@@ -72,7 +73,7 @@ const GoogleButton = () => {
         })
         .then(res => {
          // safing token in presistive state
-          storeData(res.data.token)
+          storeData(res.data.token,res.data.id)
           authentication();
         })
         .catch(e => {

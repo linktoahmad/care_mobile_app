@@ -10,7 +10,8 @@ import {
   Button,
 } from '@components';
 import {useTranslation} from 'react-i18next';
-import {useSelector, useDispatch} from 'react-redux';
+import { useSelector } from 'react-redux';
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'react-native-axios';
 import apiList, {serverIp} from '../../apiList';
@@ -33,24 +34,36 @@ export default function Booking({navigation}) {
     image:
       'https://ogden_images.s3.amazonaws.com/www.motherearthliving.com/images/2019/04/20130432/79F3E4F401294522A93B04BDF9F1B634-300x300.jpg',
   });
-  const dispatch = useDispatch();
+ 
+
   const totalScore = useSelector(state => state.application);
 
-  const SaveMood = mood => {
-    dispatch(
-      ApplicationActions.onSaveMood(
-        mood,
-        new Date().toISOString('uk').substring(0, 10),
-      ),
-    );
-    setResult(true);
-    getMoodActivity();
+  const getDailyData =async () => {
+    try {
+      const id = await AsyncStorage.getItem('@storage_Key_id');
+      if (id !== null) {
+        axios
+          .get(apiList.GetDailyData+`/${id}`)
+          .then(res =>{
+            if(res.data!==null){
+              getMoodActivity()
+              setResult(res.data)
+            }
+            else {
+              getQuiz()
+            }
+
+          }  )
+          .catch(e => console.log(e));
+      }
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   const getResult = async () => {
     // quiz score max can be 1000 and min is 100
     // quiz score/10 to get value under or equal 100
-    console.log(totalScore.questions);
     var sum = 0;
     for (var el in totalScore.questions) {
       if (totalScore.questions.hasOwnProperty(el)) {
@@ -59,7 +72,7 @@ export default function Booking({navigation}) {
     }
     try {
       const value = await AsyncStorage.getItem('@storage_Key');
-      console.log(value);
+      
       if (value !== null) {
         axios
           .get(apiList.getUserDate, {
@@ -68,20 +81,13 @@ export default function Booking({navigation}) {
             },
           })
           .then(res => {
-            console.log({
-              _id: res.data._id,
-              score: sum / 10,
-            });
             axios
               .post(apiList.SubmitQuiz, {
                 _id: res.data._id,
                 score: sum / 10,
               })
               .then(() => {
-                axios.get(apiList.GetMoodOnScore+`/${Math.round(sum / 10) * 10}`).then(res => {
-                  SaveMood(res.data.mood)
-                }
-                )
+                getDailyData()
               });
           });
       }
@@ -141,18 +147,15 @@ export default function Booking({navigation}) {
       });
   };
 
-  useEffect(() => {
-    // console.log(totalScore.quizData.date);
-    // console.log(totalScore.quizData.mood);
-    if (
-      totalScore.quizData.date === new Date().toISOString('uk').substring(0, 10)
-    ) {
-      setResult(true);
-      getMoodActivity();
-    }
 
-    getQuiz();
-  }, []);
+
+  useEffect(() => {
+    
+    const focusHandler = navigation.addListener('focus', () => {
+      getDailyData()
+    });
+    return focusHandler;
+}, [navigation]);
 
   const renderItem = item => {
     return (
@@ -216,7 +219,7 @@ export default function Booking({navigation}) {
                 overline
                 semibold
                 style={{textAlign: 'center', color: 'black', fontSize: 20}}>
-                {totalScore.quizData.date}
+                {result.date_added.substring(0,10)}
               </Text>
               <Text
                 overline
@@ -232,14 +235,14 @@ export default function Booking({navigation}) {
                 overline
                 semibold
                 style={{textAlign: 'center', color: 'black', fontSize: 20}}>
-                {totalScore.quizData.mood}
+                {result.mood}
               </Text>
             </View>
             <Card
               style={[styles.promotionItem]}
               image={`${serverIp}`+activity.image}
               onPress={() =>
-                navigation.navigate('HotelDetail', {activity: activity})
+                navigation.navigate('Event', {activity: activity})
               }>
               <Text subhead whiteColor>
                 Recomenended Activity
@@ -251,7 +254,7 @@ export default function Booking({navigation}) {
                 <Button
                   style={styles.btnPromotion}
                   onPress={() =>
-                    navigation.navigate('HotelDetail', {activity: activity})
+                    navigation.navigate('Event', {activity: activity})
                   }>
                   <Text body2 semibold whiteColor>
                     More Details
