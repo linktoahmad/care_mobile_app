@@ -11,6 +11,8 @@ const apiList = {
   GetDisplayActivity: `${serverIp}/api/getActivities`,
   GetDashboardData: `${serverIp}/api/getDashboardData`,
   GetMoodOnScore: `${serverIp}/api/getmood`,
+  GetTodayData: `${serverIp}/api/getmood`,
+  GetDailyData: `${serverIp}/api/getQuizData`,
 };
 
 export default apiList;

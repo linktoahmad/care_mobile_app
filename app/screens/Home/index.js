@@ -7,6 +7,7 @@ import styles from './styles';
 import {useTranslation} from 'react-i18next';
 import {useSelector} from 'react-redux';
 import axios from 'react-native-axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import apiList, {serverIp} from '../../apiList';
 import Cover from "../CareCover.png"
 
@@ -15,7 +16,7 @@ export default function Home({navigation}) {
   const {colors} = useTheme();
 
   const moodStatus = useSelector(state => state.application);
-
+  const [result, setResult] = useState(null);
   const [activities, setActivities] = useState([
     {
       name: 'Jogging',
@@ -43,6 +44,22 @@ export default function Home({navigation}) {
   const [heightHeader, setHeightHeader] = useState(Utils.heightHeader());
   const deltaY = new Animated.Value(0);
 
+  const getDailyData =async () => {
+    try {
+      const id = await AsyncStorage.getItem('@storage_Key_id');
+      if (id !== null) {
+        axios
+          .get(apiList.GetDailyData+`/${id}`)
+          .then(res =>{ 
+              setResult(res.data)
+           })
+          .catch(e => console.log(e));
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   const getActivities = () => {
     axios
       .get(apiList.GetDisplayActivity)
@@ -59,7 +76,7 @@ export default function Home({navigation}) {
     /* [sad-cry,sad-tear,frown,flushed,meh,smile,smile-beam,grin-alt,grin-beam,grin-stars] */
     // moods enum=[depressed,stressed,upset,tense,fatigued,calm,relaxed,happy,excited,joy]
 
-    switch (moodStatus.quizData.mood) {
+    switch (result?result.mood:"") {
       case 'depressed':
         return 'sad-cry';
         break;
@@ -105,6 +122,13 @@ export default function Home({navigation}) {
     getActivities();
   }, []);
 
+  useEffect(() => {
+    const focusHandler = navigation.addListener('focus', () => {
+      getDailyData()
+    });
+    return focusHandler;
+}, [navigation]);
+
   return (
     <View style={{flex: 1}}>
       <Animated.Image
@@ -147,7 +171,7 @@ export default function Home({navigation}) {
                   },
                 ]}>
                 <Text semibold style={styles.titleView}>
-                  Mood according to last quiz
+                  {result?"Mood according to last quiz":"Please take a quiz"}
                 </Text>
                 <Icon
                   name={renderIconService()}
@@ -156,8 +180,8 @@ export default function Home({navigation}) {
                   style={{textAlign: 'center'}}
                 />
                 <Text title3 semibold style={{textAlign: 'center'}}>
-                  {moodStatus.quizData.mood !== ''
-                    ? moodStatus.quizData.mood
+                  {result !== null
+                    ? result.mood
                     : ''}
                 </Text>
                 <Text style={styles.titleView}>

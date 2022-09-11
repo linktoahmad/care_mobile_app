@@ -49,9 +49,10 @@ export default function SignIn({navigation}) {
     }
   };
 
-  const storeData = async (value) => {
+  const storeData = async (value,id) => {
     try {
       await AsyncStorage.setItem('@storage_Key', value)
+      await AsyncStorage.setItem('@storage_Key_id', id)
     } catch (e) {
       console.log(e)
     }
@@ -72,7 +73,7 @@ export default function SignIn({navigation}) {
           password: password,
         })
         .then(res => {
-          storeData(res.data.token);
+          storeData(res.data.token,res.data.id);
           dispatch(AuthActions.authentication(true));
           setTimeout(() => {
             navigation.navigate('Home')
