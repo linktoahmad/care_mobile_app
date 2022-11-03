@@ -38,7 +38,7 @@ export default function Home({navigation}) {
       mood: 'calm',
       description: 'reading is an calm axtivity for intellect individuals',
       image:
-        'http://192.168.0.8:4000/host/images/130931e4-0519-4fd0-94f5-5eb84acb7447.jpg',
+      `${serverIp}/host/images/130931e4-0519-4fd0-94f5-5eb84acb7447.jpg`,
     },
   ]);
   const [heightHeader, setHeightHeader] = useState(Utils.heightHeader());

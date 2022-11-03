@@ -10,12 +10,14 @@ import axios from 'react-native-axios';
 import apiList from '../../apiList';
 import {Calendar} from 'react-native-calendars';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import { useIsFocused } from '@react-navigation/native';
 //todo
 // history color according to mode
 // getting history data
 
 export default function Messenger({navigation}) {
+  const isFocused = useIsFocused();
+  // const [requests, setRequests] = useState('');
   const {colors} = useTheme();
   const {t} = useTranslation();
   const [userData, setUserdata] = useState('');
@@ -125,7 +127,7 @@ export default function Messenger({navigation}) {
 
   useEffect(() => {
     getData();
-  }, []);
+  }, [isFocused]);
 
   return (
     <View style={{flex: 1}}>

@@ -133,7 +133,7 @@ export default function Booking({navigation}) {
 
   const getMoodActivity = () => {
     axios
-      .post(apiList.GetMoodActivity, {mood: totalScore.quizData.mood})
+      .post(apiList.GetMoodActivity, {mood: result.mood})
       .then(res => {
         setActivity({
           name: res.data[0].name,
